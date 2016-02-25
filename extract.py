@@ -7,6 +7,7 @@ parser.add_argument('infile', metavar='if', type=str, help='in-file location')
 parser.add_argument('outfile', metavar='of', type=str, help='out-file location')
 parser.add_argument('user1', metavar='u1', type=str, help='User 1\'s name within the conversation')
 parser.add_argument('user2', metavar='u2', type=str, help='User 2\'s name within the conversation')
+parser.add_argument("-v", help="increase output verbosity", action="store_true")
 args = parser.parse_args()
 #print(args.infile)
 
@@ -35,6 +36,10 @@ string_final = ''
 #
 ############################################################################
 
+############# CSV Format ################
+# Sender, Day, Date, Time, UTC, Message #
+#########################################
+
 for raw_line in raw_msg_file:
     # Find regular expression
     matches = re.findall(regex_exp, raw_line)
@@ -50,7 +55,7 @@ for raw_line in raw_msg_file:
     has_user1_sent = False  # Has user1 sent a message
     has_user2_sent = False  # Has user2 returned message
     different_sender = False    # Is it a different sender now
-    prev_sender = ''
+    prev_sender = ''        # Who was the previous sender
 
     # Buffer string to be concatenated into the final string
     for match in matches:
@@ -65,11 +70,14 @@ for raw_line in raw_msg_file:
         elif prev_sender != match[0]:
             different_sender = True
 
-        # If it is a different sender this time and user1 and user2 has 
+        # If it is a different sender this time and user1 and user2 has
         # sent messages then concatenate it into the final string and
         # wipe the buffers
         if different_sender:
             if has_user1_sent and has_user2_sent:
+                # If verbose
+                if args.v:
+                    print(string_buffer)
                 string_final = string_final + '\n' + string_buffer
                 string_buffer = ''
                 has_user1_sent = False
@@ -78,13 +86,20 @@ for raw_line in raw_msg_file:
         # Logic checking
         # Commas are removed before concatenated
         # Since our values are separated by commas
+
         if user1_name in match[0]:
             has_user1_sent = True
-            string_buffer = string_buffer + '\n' + match[0].replace(',', '') + ',' + match[1].replace(',', '') + ',' + match[2].replace(',', '')
+
+            datetime_buffer = match[1].replace(',', '').split()
+
+            string_buffer = string_buffer + '\n' + match[0].replace(',', '') + ',' + datetime_buffer[0] + ',' + datetime_buffer[1] + ' ' + datetime_buffer[2] + ' ' + datetime_buffer[3] + ',' + datetime_buffer[5] + ',' + datetime_buffer[6] + ',' + match[2].replace(',', '')
 
         elif user2_name in match[0]:
             has_user2_sent = True
-            string_buffer = string_buffer + '\n' + match[0].replace(',', '') + ',' + match[1].replace(',', '') + ',' + match[2].replace(',', '')
+
+            datetime_buffer = match[1].replace(',', '').split()
+
+            string_buffer = string_buffer + '\n' + match[0].replace(',', '') + ',' + datetime_buffer[0] + ',' + datetime_buffer[1] + ' ' + datetime_buffer[2] + ' ' + datetime_buffer[3] + ',' + datetime_buffer[5] + ',' + datetime_buffer[6] + ',' + match[2].replace(',', '')
 
         else:
             if user1_name not in match[0] and user2_name not in match[0]: # Must be a conversation between someone else, scrap the buffer
@@ -95,6 +110,4 @@ for raw_line in raw_msg_file:
         # Set previous sender
         prev_sender = match[0]
 
-        #print(match[0], match[1], match[2])
 
-print(string_final)
