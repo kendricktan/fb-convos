@@ -12,13 +12,14 @@ def html_escape(s):
     return p.save_end()
 
 # Command line arguements
-parser = argparse.ArgumentParser(description='Extract and format fb messages to be analyzed')
+parser = argparse.ArgumentParser(description='Extract and format fb messages to be analyzed, with some simple wordclouds and statistics')
 parser.add_argument('infile', metavar='if', type=str, help='in-file location')
 parser.add_argument('outfile', metavar='of', type=str, help='out-file location')
 parser.add_argument('user1', metavar='u1', type=str, help='User 1\'s name within the conversation')
 parser.add_argument('user2', metavar='u2', type=str, help='User 2\'s name within the conversation')
-parser.add_argument("-v", help="increase output verbosity", action="store_true")
-parser.add_argument("-wc", help="display wordcloud", action="store_true")
+parser.add_argument('-v', help='increase output verbosity', action='store_true')
+parser.add_argument('-s', help='display message statistics', action='store_true')
+parser.add_argument('-wc', help='display simple wordcloud', action='store_true')
 args = parser.parse_args()
 #print(args.infile)
 
@@ -38,16 +39,23 @@ messages_total = ''
 user1_messages_total = ''
 user2_messages_total = ''
 
-################################ RULES #####################################
-#
-# > Conversation will be considered initiated if there isn't any previous 
-# conversation between the two for 15 minutes
-#
-# > Since facebook organizes the message really untidily, it'll only extract
-# messages which you (user 1) initiate, and which user 2 ends with or 
-# continue, or vice-versa
-#
-############################################################################
+# Message statistics
+total_messages_sent = 0
+user1_messages_sent = 0
+user2_messages_sent = 0
+user1_temp_messages = 0
+user2_temp_messages = 0
+
+################################ RULES #######################################
+#                                                                            #
+# > Conversation will be considered initiated if there isn't any previous    #
+# conversation between the two for 15 minutes                                #
+#                                                                            #
+# > Since facebook organizes the message really untidily, it'll only extract #
+# messages which you (user 1) initiate, and which user 2 ends with or        #
+# continue, or vice-versa                                                    #
+#                                                                            #
+##############################################################################
 
 ############# CSV Format ################
 # Sender, Day, Date, Time, UTC, Message #
@@ -96,6 +104,13 @@ for raw_line in raw_msg_file:
                 # Writes to file
                 fmt_msg_file.write(string_buffer)
 
+                # If want statistics then we append to final string
+                if args.s:
+                    user1_messages_sent = user1_messages_sent + user1_temp_messages
+                    user2_messages_sent = user2_messages_sent + user2_temp_messages
+                    user1_temp_messages = 0
+                    user2_temp_messages = 0
+
                 # Appends message information to
                 # respective senders
                 for csv_split in string_buffer.split('\n'):
@@ -132,6 +147,11 @@ for raw_line in raw_msg_file:
         # Since our values are separated by commas
 
         if user1_name in match[0]:
+            # User statistics
+            if args.s:
+                user1_temp_messages = user1_temp_messages + 1
+
+            # Logic checking
             has_user1_sent = True
 
             # Datetime formatted CSV
@@ -140,6 +160,11 @@ for raw_line in raw_msg_file:
             string_buffer = string_buffer + '\n' + match[0].replace(',', '') + ',' + datetime_buffer[0] + ',' + datetime_buffer[1] + ' ' + datetime_buffer[2] + ' ' + datetime_buffer[3] + ',' + datetime_buffer[5] + ',' + datetime_buffer[6] + ',' + html_escape(match[2].replace(',', ''))
 
         elif user2_name in match[0]:
+            # User statistics
+            if args.s:
+                user2_temp_messages = user2_temp_messages + 1
+
+            # Logic checking
             has_user2_sent = True
 
             # Datetime formatted CSV
@@ -152,6 +177,8 @@ for raw_line in raw_msg_file:
                 string_buffer = ''
                 has_user1_sent = False
                 has_user2_sent = False
+                user1_temp_messages = 0
+                user2_temp_messages = 0
 
         # Set previous sender
         prev_sender = match[0]
@@ -176,3 +203,10 @@ if args.wc:
     plt.imshow(wordcloud)
     plt.axis("off")
     plt.show()
+
+# User statistics
+if args.s:
+    print("#### Statistics ####")
+    print("total_messages_sent: " + str(user1_messages_sent + user2_messages_sent))
+    print("user1_messages_sent: " + str(user1_messages_sent))
+    print("user2_messages_sent: " + str(user2_messages_sent))
