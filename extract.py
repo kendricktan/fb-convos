@@ -78,6 +78,7 @@ for raw_line in raw_msg_file:
                 # If verbose
                 if args.v:
                     print(string_buffer)
+                fmt_msg_file.write(string_buffer)
                 string_final = string_final + '\n' + string_buffer
                 string_buffer = ''
                 has_user1_sent = False
@@ -110,4 +111,6 @@ for raw_line in raw_msg_file:
         # Set previous sender
         prev_sender = match[0]
 
-
+# Close files
+raw_msg_file.close()
+fmt_msg_file.close()
