@@ -189,16 +189,11 @@ fmt_msg_file.close()
 
 # Display wordcloud
 if args.wc:
-    # Generate wordcloud
-    wordcloud = WordCloud().generate(messages_total)
-
-    # Display a wordcloud image
+    # Generate and display
+    # a wordcloud image
     # the matplotlib way:
     import matplotlib.pyplot as plt
-    plt.imshow(wordcloud)
-    plt.axis("off")
-
-    wordcloud = WordCloud(max_font_size=40, relative_scaling=.5).generate(messages_total)
+    wordcloud = WordCloud(background_color="white", max_words=2000, max_font_size=80, relative_scaling=.25).generate(messages_total)
     plt.figure()
     plt.imshow(wordcloud)
     plt.axis("off")
@@ -206,7 +201,8 @@ if args.wc:
 
 # User statistics
 if args.s:
-    print("#### Statistics ####")
+    print("#### Simple Statistics ####")
     print("total_messages_sent: " + str(user1_messages_sent + user2_messages_sent))
     print("user1_messages_sent: " + str(user1_messages_sent))
     print("user2_messages_sent: " + str(user2_messages_sent))
+    print("#### End simple statistics ####")
