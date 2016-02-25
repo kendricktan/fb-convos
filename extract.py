@@ -1,5 +1,15 @@
+from wordcloud import WordCloud
 import argparse
 import re
+import htmllib
+
+# Escaping html so we don't have messages like
+# &amp, &quot, &gt, etc...
+def html_escape(s):
+    p = htmllib.HTMLParser(None)
+    p.save_bgn()
+    p.feed(s)
+    return p.save_end()
 
 # Command line arguements
 parser = argparse.ArgumentParser(description='Extract and format fb messages to be analyzed')
@@ -8,6 +18,7 @@ parser.add_argument('outfile', metavar='of', type=str, help='out-file location')
 parser.add_argument('user1', metavar='u1', type=str, help='User 1\'s name within the conversation')
 parser.add_argument('user2', metavar='u2', type=str, help='User 2\'s name within the conversation')
 parser.add_argument("-v", help="increase output verbosity", action="store_true")
+parser.add_argument("-wc", help="display wordcloud", action="store_true")
 args = parser.parse_args()
 #print(args.infile)
 
@@ -22,8 +33,10 @@ user2_name = args.user2
 # Regular expression
 regex_exp = r'<div class="message"><div class="message_header"><span class="user">(.*?)</span><span class="meta">(.*?)</span></div></div><p>(.*?)</p>'
 
-# Our final string to be written onto the file
-string_final = ''
+# Our total user messages
+messages_total = ''
+user1_messages_total = ''
+user2_messages_total = ''
 
 ################################ RULES #####################################
 #
@@ -45,7 +58,7 @@ for raw_line in raw_msg_file:
     matches = re.findall(regex_exp, raw_line)
 
     # String buffer to be concatentated
-    # into the final string
+    # with relavent information
     string_buffer = ''
 
     # Variables to indicate if we should
@@ -75,11 +88,41 @@ for raw_line in raw_msg_file:
         # wipe the buffers
         if different_sender:
             if has_user1_sent and has_user2_sent:
+
                 # If verbose
                 if args.v:
                     print(string_buffer)
+
+                # Writes to file
                 fmt_msg_file.write(string_buffer)
-                string_final = string_final + '\n' + string_buffer
+
+                # Appends message information to
+                # respective senders
+                for csv_split in string_buffer.split('\n'):
+                    lines_splitted = csv_split.split(',')
+
+                    # lines_splitted[0] = sender name
+                    # lines_splitted[1] = day
+                    # lines_splitted[2] = date
+                    # lines_splitted[3] = time
+                    # lines_splitted[4] = UTC
+                    # lines_splitted[5] = message
+
+                    # Don't want it to crash
+                    try:
+                        # Append it to our messages
+                        messages_total = messages_total + ' ' + lines_splitted[5]
+
+                        if user1_name in lines_splitted[0]:
+                            user1_messages_total = user1_messages_total + ' ' + lines_splitted[5]
+                        elif user2_name in lines_splitted[0]:
+                            user2_messages_total = user2_messages_total + ' ' + lines_splitted[5]
+
+                    except:
+                        pass
+
+
+                # Resets the values
                 string_buffer = ''
                 has_user1_sent = False
                 has_user2_sent = False
@@ -91,16 +134,18 @@ for raw_line in raw_msg_file:
         if user1_name in match[0]:
             has_user1_sent = True
 
+            # Datetime formatted CSV
             datetime_buffer = match[1].replace(',', '').split()
 
-            string_buffer = string_buffer + '\n' + match[0].replace(',', '') + ',' + datetime_buffer[0] + ',' + datetime_buffer[1] + ' ' + datetime_buffer[2] + ' ' + datetime_buffer[3] + ',' + datetime_buffer[5] + ',' + datetime_buffer[6] + ',' + match[2].replace(',', '')
+            string_buffer = string_buffer + '\n' + match[0].replace(',', '') + ',' + datetime_buffer[0] + ',' + datetime_buffer[1] + ' ' + datetime_buffer[2] + ' ' + datetime_buffer[3] + ',' + datetime_buffer[5] + ',' + datetime_buffer[6] + ',' + html_escape(match[2].replace(',', ''))
 
         elif user2_name in match[0]:
             has_user2_sent = True
 
+            # Datetime formatted CSV
             datetime_buffer = match[1].replace(',', '').split()
 
-            string_buffer = string_buffer + '\n' + match[0].replace(',', '') + ',' + datetime_buffer[0] + ',' + datetime_buffer[1] + ' ' + datetime_buffer[2] + ' ' + datetime_buffer[3] + ',' + datetime_buffer[5] + ',' + datetime_buffer[6] + ',' + match[2].replace(',', '')
+            string_buffer = string_buffer + '\n' + match[0].replace(',', '') + ',' + datetime_buffer[0] + ',' + datetime_buffer[1] + ' ' + datetime_buffer[2] + ' ' + datetime_buffer[3] + ',' + datetime_buffer[5] + ',' + datetime_buffer[6] + ',' + html_escape(match[2].replace(',', ''))
 
         else:
             if user1_name not in match[0] and user2_name not in match[0]: # Must be a conversation between someone else, scrap the buffer
@@ -114,3 +159,20 @@ for raw_line in raw_msg_file:
 # Close files
 raw_msg_file.close()
 fmt_msg_file.close()
+
+# Display wordcloud
+if args.wc:
+    # Generate wordcloud
+    wordcloud = WordCloud().generate(messages_total)
+
+    # Display a wordcloud image
+    # the matplotlib way:
+    import matplotlib.pyplot as plt
+    plt.imshow(wordcloud)
+    plt.axis("off")
+
+    wordcloud = WordCloud(max_font_size=40, relative_scaling=.5).generate(messages_total)
+    plt.figure()
+    plt.imshow(wordcloud)
+    plt.axis("off")
+    plt.show()
