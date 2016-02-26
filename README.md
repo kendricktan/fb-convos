@@ -49,15 +49,24 @@ For more information simply invoke the --help flag
 ### Step 3 (Wordcloud):
 To generate a wordcloud from add the formatted data, simply invoke
 
-    python breakdown/analyze-wordcloud.py data/out.csv output/
+    python breakdown/analyze-wordcloud.py data/out.csv
+
+For wordcloud which combines messages from both users simply invoke the `-ob` (output both) flag
+
+    python breakdown/analyze-wordcloud.py -ob data/out.csv
 
 To specify a specific year (for example, 2014) do:
 
-    python breakdown/analyze-wordcloud.py -y 2014 data/out.csv output/
+    python breakdown/analyze-wordcloud.py -y 2014 data/out.csv 
     
 To generate a masked wordcloud (with the default image of a cat), run:
     
-    python breakdown/analyze-wordcloud.py -m data/out.csv output/
+    python breakdown/analyze-wordcloud.py -m data/out.csv 
+
+To save the files and don't display the masked wordclouds, run:
+
+    python breakdown/anaylze-wordcloud.py -m -dd -s [FOLDER LOCATION] data/out.csv
 
 Again, for more information invoke the --help flag
+    
     python breakdown/analyze-wordcloud.py --help
