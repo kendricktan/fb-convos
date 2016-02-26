@@ -1,10 +1,14 @@
-from wordcloud import WordCloud
+from wordcloud import WordCloud, ImageColorGenerator
 import matplotlib.pyplot as plt
 import argparse
+import numpy as np
+from PIL import Image
+from os import path
 
 # Arguements
 parser = argparse.ArgumentParser(description='Generate wordcloud images from csv-formatted fb convo data')
 parser.add_argument('-y', dest='year', const=2015, action='store', nargs='?', type=int, help='only display wordclouds from this year') # If year is not specify then wordcloud will be generated from everything
+parser.add_argument('-m', help='mask wordcloud (to use custom masks, replace the masks with your own images)', action='store_true') # Mask images, or not
 parser.add_argument('-ob', help='output both user\'s combined wordcloud', action='store_true') # Combine both users messages into a wordcloud too
 parser.add_argument('csv', metavar='csv', type=str, help='csv file location')
 parser.add_argument('ol', metavar='ol', type=str, help='output FOLDER location')
@@ -16,6 +20,8 @@ user2_name = '' # Variable to store user2's name
 
 user1_string = '' # Variable to store messages sent by user1
 user2_string = '' # Variable to store messages sent by user2
+
+image_coloring = np.array(Image.open(path.join(path.dirname(__file__), 'mask_color.png')))
 
 # Opens csv file (comma separated values: csv)
 with open(args.csv, 'rb') as f:
@@ -63,20 +69,39 @@ user1_title = user1_name + '\'s ' + (str(args.year) if args.year else '') + ' wo
 user2_title = user2_name + '\'s ' + (str(args.year) if args.year else '') + ' wordcloud' # Variable to store user2's plot title
 
 # Generate wordcloud
-wordcloud_user1 = WordCloud(background_color='white', max_words=2000, max_font_size=80, relative_scaling=.25).generate(user1_string)
-wordcloud_user2 = WordCloud(background_color='white', max_words=2000, max_font_size=80, relative_scaling=.25).generate(user2_string)
-wordcloud_users = WordCloud(background_color='white', max_words=2000, max_font_size=80, relative_scaling=.25).generate(user2_string + ' ' + user1_string)
+wordcloud_user1 = WordCloud(mask=image_coloring if args.m else None, background_color='white', max_words=2000, max_font_size=80, relative_scaling=.25).generate(user1_string)
+wordcloud_user2 = WordCloud(mask=image_coloring if args.m else None, background_color='white', max_words=2000, max_font_size=80, relative_scaling=.25).generate(user2_string)
+wordcloud_users = WordCloud(mask=image_coloring if args.m else None, background_color='white', max_words=2000, max_font_size=80, relative_scaling=.25).generate(user2_string + ' ' + user1_string)
+
+image_colors = ImageColorGenerator(image_coloring)
 
 # Plot wordcloud
 plt.figure(user1_title)
 plt.imshow(wordcloud_user1)
 plt.axis('off')
 
+# If mask
+if args.m:
+    plt.imshow(wordcloud_user1.recolor(color_func=image_colors))
+    plt.axis('off')
+
 plt.figure(user2_title)
 plt.imshow(wordcloud_user2)
 plt.axis('off')
 
-plt.figure('combined WordCloud')
-plt.imshow(wordcloud_users)
-plt.axis('off')
+# If mask
+if args.m:
+    plt.imshow(wordcloud_user2.recolor(color_func=image_colors))
+    plt.axis('off')
+
+# If show combined
+if args.ob:
+    plt.figure('combined wordcloud')
+    plt.imshow(wordcloud_users)
+    plt.axis("off")
+
+    # If mask
+    if args.m:
+        plt.imshow(wordcloud_users.recolor(color_func=image_colors))
+        plt.axis('off')
 plt.show()

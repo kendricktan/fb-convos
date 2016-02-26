@@ -2,6 +2,8 @@
 
 ## About
 
+> v1.1: Able to generate wordcloud with masks, simple by adding the -m command
+	To use custom masks, replace the mask_color.png to the image of your choice
 > v1.0: Able to extract conversations between two people
 	Able to generate a wordcloud
 
@@ -53,5 +55,9 @@ To specify a specific year (for example, 2014) do:
 
     python breakdown/analyze-wordcloud.py -y 2014 data/out.csv output/
     
+To generate a masked wordcloud (with the default image of a cat), run:
+    
+    python breakdown/analyze-wordcloud.py -m data/out.csv output/
+
 Again, for more information invoke the --help flag
     python breakdown/analyze-wordcloud.py --help
