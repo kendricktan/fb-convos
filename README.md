@@ -3,13 +3,17 @@
 ## About
 
 
-> v1.1: Able to generate wordcloud with masks, simple by adding the -m command
+v1.1:
 
->>: To use custom masks, replace the mask_color.png to the image of your choice
-	
-> v1.0: Able to extract conversations between two people
+ Able to generate wordcloud with masks, simple by adding the -m command
 
->>: Able to generate a wordcloud
+ To use custom masks, replace the mask_color.png to the image of your choice
+
+v1.0: 
+
+ Able to extract conversations between two people
+
+ Able to generate a wordcloud
 
 Analayze and visualize your facebook converstaions between you and someone!
 
