@@ -23,7 +23,7 @@ Analayze and visualize your facebook converstaions between you and someone!
 1. Message frequency according to time
 2. Who initiates conversation (before and after dating)
 3. Total length of messages
-4. Total number of conversations against time
+4. Total number of messages per day (graph over time) 
 n. Add ability to grab messages that span over multiple lines
 
 ## Getting started

@@ -1,3 +1,7 @@
+import pandas as pd
+import matplotlib as mpl
+from matplotlib.colors import LinearSegmentedColormap
+from matplotlib.lines import Line2D
 import argparse
 import numpy as np
 import matplotlib.pyplot as plt
@@ -64,17 +68,17 @@ with open(args.csv, 'rv') as f:
         except:
             pass
 
-#x_data = ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')
-N = 7
-ind = np.arange(N)
-x_data = (1,6,11,16,21,26,31)
-y_data = (days.Monday, days.Tuesday, days.Wednesday, days.Thursday, days.Friday, days.Saturday, days.Sunday)
+days_list = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+msg_freq_list = [days.Monday, days.Tuesday, days.Wednesday, days.Thursday, days.Friday, days.Saturday, days.Sunday]
 
-fig, ax = plt.subplots()
-rects = ax.bar(ind, y_data, 0.35, color='y', yerr=0.4)
-ax.set_ylabel('Message frequency')
-ax.set_xlabel('days')
-ax.set_xticklabels(('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'))
+data = {'msg frequency': pd.Series(msg_freq_list, index=days_list)}
+
+df = pd.DataFrame(data)
+
+fig, axes = plt.subplots()
+
+i, c = df.columns
+df[c].plot(kind = 'bar', figsize=(12,10), title=c)
 
 plt.show()
 
