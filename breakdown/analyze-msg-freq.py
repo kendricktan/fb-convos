@@ -65,11 +65,18 @@ with open(args.csv, 'rv') as f:
             pass
 
 #x_data = ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')
-x_data = (1,2,3,4,5,6,7)
+N = 7
+ind = np.arange(N)
+x_data = (1,6,11,16,21,26,31)
 y_data = (days.Monday, days.Tuesday, days.Wednesday, days.Thursday, days.Friday, days.Saturday, days.Sunday)
 
-fig = plt.figure()
-plt.bar(x_data, y_data, width=100)
+fig, ax = plt.subplots()
+rects = ax.bar(ind, y_data, 0.35, color='y', yerr=0.4)
+ax.set_ylabel('Message frequency')
+ax.set_xlabel('days')
+ax.set_xticklabels(('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'))
+
+plt.show()
 
 #days.self_print()
 
