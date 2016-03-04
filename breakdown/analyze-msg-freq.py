@@ -1,59 +1,72 @@
-import pandas as pd
-import matplotlib as mpl
-from matplotlib.colors import LinearSegmentedColormap
-from matplotlib.lines import Line2D
+from datetime import date
 import argparse
 import numpy as np
 import matplotlib.pyplot as plt
-
-# To do:
-# Add argument for displaying graph in hours; or days; or months;
 
 # Arguements
 parser = argparse.ArgumentParser(description='Generate a graph based on message frequency and times throughout the days')
 parser.add_argument('csv', metavar='csv', type=str, help='csv file location')
 args = parser.parse_args()
 
-# Variables
-
 # Days to accumulate message frequency
 class Days:
-    Monday = 0 
-    Tuesday = 0
-    Wednesday = 0
-    Thursday = 0
-    Friday = 0
-    Saturday = 0
-    Sunday = 0
+    days = {}
 
     def analyse_days(self, s):
-        if 'monday' in s.lower():
-            self.Monday = self.Monday + 1
-        elif 'tuesday' in s.lower():
-            self.Tuesday = self.Tuesday + 1
-        elif 'wednesday' in s.lower():
-            self.Wednesday = self.Wednesday + 1
-        elif 'thursday' in s.lower():
-            self.Thursday = self.Thursday + 1
-        elif 'friday' in s.lower():
-            self.Friday = self.Friday + 1
-        elif 'saturday' in s.lower():
-            self.Saturday = self.Saturday + 1
-        elif 'sunday' in s.lower():
-            self.Sunday = self.Sunday + 1
+        try:
+            self.days[s] = self.days[s] + 1
+        except:
+            self.days[s] = 1
 
     def self_print(self):
-        print('Monday: ' + str(self.Monday))
-        print('Tuesday: ' + str(self.Tuesday)) 
-        print('Wednesday: ' + str(self.Wednesday)) 
-        print('Thursday: ' + str(self.Thursday)) 
-        print('Friday: ' + str(self.Friday)) 
-        print('Saturday: ' + str(self.Saturday)) 
-        print('Sunday: ' + str(self.Sunday)) 
+        for i in self.days:
+            print(i, self.days[i])
 
+# Useful functions to convert fb-msg data into datetime
+# Converts month to numbers
+def month_converter(month):
+    months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    return months.index(month) + 1
+
+# Returns date object from date str
+# provided from fb
+def date_analyze(s):
+    s = s.split(' ')
+    day_num = s[1]
+    month_num = month_converter(s[0])
+    year_num = s[2]
+
+    return date(int(year_num), int(month_num), int(day_num))
+
+# Variables
 days = Days()
 
 # Opens csv file (comma separated values: csv)
+#
+
+# Read first line in order to get first date
+with open(args.csv, 'rv') as f:
+    found_first = False
+    for line in f.readlines():
+        if not found_first:
+            try:
+                csv_first = line.split(',')
+                date_first = date_analyze(csv_first[2])
+                found_first = True 
+            except:
+                pass
+        else:
+            pass
+    # Read last line in order to get last date
+    csv_last = line.split(',')
+    date_last = date_analyze(csv_last[2])
+
+# Compute difference of days
+# Analyze data accordingly to prepare data
+delta_days = (date_first - date_last).days
+print(delta_days)
+
+# Use previous findings to organize data
 with open(args.csv, 'rv') as f:
     for line in f.readlines():
         try:
@@ -68,21 +81,11 @@ with open(args.csv, 'rv') as f:
         except:
             pass
 
-days_list = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-msg_freq_list = [days.Monday, days.Tuesday, days.Wednesday, days.Thursday, days.Friday, days.Saturday, days.Sunday]
+days.self_print()
 
-data = {'msg frequency': pd.Series(msg_freq_list, index=days_list)}
+x = [i for i in range(0, len(days.days))]
+y = [days.days[i] for i in days.days] 
 
-df = pd.DataFrame(data)
+print(x)
+print(y)
 
-fig, axes = plt.subplots()
-
-i, c = df.columns
-df[c].plot(kind = 'bar', figsize=(12,10), title=c)
-
-plt.show()
-
-#days.self_print()
-
-# x axis = time
-# y axis = number of messages

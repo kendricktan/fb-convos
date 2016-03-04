@@ -20,10 +20,9 @@ Analayze and visualize your facebook converstaions between you and someone!
 ![wordcloud](http://i.imgur.com/BFvzktd.png)
 
 ## Todo
-1. Message frequency according to time
+1. Message frequency according to time (pie chart of which days you talk the most) [blue=you, red=her, green=all]
 2. Who initiates conversation (before and after dating)
-3. Total length of messages
-4. Total number of messages per day (graph over time) 
+3. Average words per conversation over time
 n. Add ability to grab messages that span over multiple lines
 
 ## Getting started
