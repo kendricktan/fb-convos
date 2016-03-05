@@ -1,4 +1,4 @@
-from datetime import datetime
+import time
 import argparse
 import operator
 import re
@@ -194,10 +194,11 @@ for raw_line in raw_msg_file:
         prev_sender = match[0]
 
 # Sort it by date, in descending order
-list_final_sorted = sorted(list_final,key=lambda row:datetime.strptime(row.split(',')[2],'%Y-%m-%d'), reverse=True)
+list_final.sort(key=lambda row: time.mktime(time.strptime(row.split(',')[2],'%Y-%m-%d')), reverse=True)
+list_final.pop() # Popping last item off list, some bug in the sorting algorithm appends a random thing twice (once in middle and once at the back), idek
 
 # Write to file
-for line_buffer in list_final_sorted:
+for line_buffer in list_final:
     fmt_msg_file.write(str(line_buffer).replace('\'', ''))
 
 # Close files

@@ -92,10 +92,13 @@ with open(args.csv, 'rv') as f:
 
             # Get date
             cur_date = date_analyze(csv_vals[2])
-            delta_days_index = (date_last-cur_date).days
 
-            # Increment message count via indexing
-            y_data[delta_days_index] = y_data[delta_days_index] + 1
+            # if its within the dates
+            if cur_date >= first_month and cur_date <= date_last:
+                delta_days_index = (date_last-cur_date).days
+
+                # Increment message count via indexing
+                y_data[delta_days_index] = y_data[delta_days_index] + 1
 
         except:
             pass
