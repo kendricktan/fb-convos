@@ -63,12 +63,13 @@ with open(args.csv, 'rv') as f:
 # Analyze data accordingly to prepare data
 #
 
+first_month = date(date_first.year, date_first.month, 1) # First day of oldest message (makes data look neater)
+
 # If user has defined his own start date
 if args.sd:
     buffer_list = args.sd.split('-')
-    buffer_sd = date(int(buffer_list[0]), int(buffer_list[1]), int(buffer_list[2]))
-
-first_month = buffer_sd if buffer_sd else date(date_first.year, date_first.month, 1) # First day of oldest message (makes data look neater)
+    first_month = date(int(buffer_list[0]), int(buffer_list[1]), int(buffer_list[2]))
+    
 
 # If user has defined his own end date
 if args.ed:
