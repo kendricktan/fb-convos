@@ -1,3 +1,4 @@
+from datetime import datetime
 import argparse
 import operator
 import re
@@ -14,7 +15,9 @@ def html_escape(s):
 # Converts month to number
 def month_to_num(month):
     months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-    return str(months.index(month) + 1)
+    if months.index(month) + 1 > 9:
+        return str(months.index(month) + 1)
+    return '0' + str(months.index(month) + 1)
 
 # Command line arguements
 parser = argparse.ArgumentParser(description='Extract and format fb messages to be analyzed, with some simple statistics')
@@ -191,7 +194,7 @@ for raw_line in raw_msg_file:
         prev_sender = match[0]
 
 # Sort it by date, in descending order
-list_final_sorted = sorted(list_final, key=operator.itemgetter(2), reverse=False)
+list_final_sorted = sorted(list_final,key=lambda row:datetime.strptime(row.split(',')[2],'%Y-%m-%d'), reverse=True)
 
 # Write to file
 for line_buffer in list_final_sorted:
