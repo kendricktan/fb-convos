@@ -58,34 +58,34 @@ def date_labels(rdate):
 # Opens csv file (comma separated values: csv)
 #
 #
-# Read first line in order to get first date
+# Read first line in order to get LAST date
+# FACEBOOK ORGANIZES FROM MOST RECENT TO OLDEST
 with open(args.csv, 'rv') as f:
-    found_first = False
+    found_last = False
     for line in f.readlines():
-        if not found_first:
+        if not found_last:
             try:
-                csv_first = line.split(',')
-                date_first = date_analyze(csv_first[2])
-                found_first = True 
+                csv_last = line.split(',')
+                date_last = date_analyze(csv_last[2])
+                found_last = True 
             except:
                 pass
         else:
             pass
     # Read last line in order to get last date
-    csv_last = line.split(',')
-    date_last = date_analyze(csv_last[2])
+    csv_first = line.split(',')
+    date_first = date_analyze(csv_first[2])
 
 # Compute difference of days
 # Analyze data accordingly to prepare data
-delta_days = (date_first - date_last).days
-delta_tick_freq = (delta_days+1)/4 # How often will labels will be displayed on the x axis
+first_month = date(date_first.year, date_first.month, 1) # First day of oldest message (makes data look neater)
+delta_days = (date_last - first_month).days
 
 # Data points
 x_data = np.arange(delta_days) # our x-axis data
 y_data = [0 for i in range(0, delta_days)] # our y-axis data
-x_labels = [date_labels(date_first)] # labels for the x axis
-x_labels_tick = [0] # where the labels appear on the x-axis
-
+x_labels = [] # labels for the x axis
+x_labels_tick = [] # where the labels appear on the x-axis
 
 # Read csv files and process
 with open(args.csv, 'rv') as f:
@@ -95,34 +95,33 @@ with open(args.csv, 'rv') as f:
 
             # Get date
             cur_date = date_analyze(csv_vals[2])
-            delta_days_index = (date_first-cur_date).days
+            delta_days_index = (date_last-cur_date).days
 
             # Increment message count via indexing
             y_data[delta_days_index] = y_data[delta_days_index] + 1
 
-            # Midpoint
-            if delta_days_index == delta_days/2:
-                if delta_days_index not in x_labels_tick:
-                    x_labels_tick.append(delta_days_index)
-
-                if date_labels(cur_date) not in x_labels:
-                    x_labels.append(date_labels(cur_date))
-
         except:
             pass
 
-    # Add the last day labels
-    if delta_days - 1 not in x_labels_tick:
-        x_labels_tick.append(delta_days-1)
+# First date label
+x_labels.append(date_labels(date_first))
+x_labels_tick.append((date_first-first_month).days)
 
-    if date_labels(cur_date) not in x_labels:
-        x_labels.append(date_labels(cur_date))
+# Organize labels according to month
+buffer_date = first_month
+while buffer_date <= date_last:
+    x_labels.append(date_labels(buffer_date))
+    x_labels_tick.append((buffer_date-first_month).days)
 
+    buffer_date = date(buffer_date.year, buffer_date.month + 1, buffer_date.day)
 
-# [::-1]s our data point
+# Last date label
+x_labels.append(date_labels(date_last))
+x_labels_tick.append((delta_days-1))
+
+# Reverse our data point
 # as fb's data starts from latest to oldest
 y_data = y_data[::-1]
-x_labels = x_labels[::-1]
 
 # Create graph
 fig, ax = plt.subplots()
