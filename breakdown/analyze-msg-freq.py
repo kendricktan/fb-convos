@@ -41,10 +41,10 @@ def num_to_month(num):
 # provided from fb
 # ACCEPTS A STRING FROM FB-FORMATTED DATETIME (separated with spaces)
 def date_analyze(s):
-    s = s.split(' ')
-    day_num = s[1]
-    month_num = month_to_num(s[0])
-    year_num = s[2]
+    s = s.split('-')
+    day_num = s[2]
+    month_num = s[1]
+    year_num = s[0]
 
     return date(int(year_num), int(month_num), int(day_num))
 
@@ -113,7 +113,10 @@ while buffer_date <= date_last:
     x_labels.append(date_labels(buffer_date))
     x_labels_tick.append((buffer_date-first_month).days)
 
-    buffer_date = date(buffer_date.year, buffer_date.month + 1, buffer_date.day)
+    try:
+        buffer_date = date(buffer_date.year, buffer_date.month + 1, buffer_date.day)
+    except:
+        buffer_date = date(buffer_date.year + 1, 1, buffer_date.day)
 
 # Last date label
 x_labels.append(date_labels(date_last))

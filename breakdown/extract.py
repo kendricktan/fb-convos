@@ -1,4 +1,3 @@
-from wordcloud import WordCloud
 import argparse
 import operator
 import re
@@ -18,14 +17,13 @@ def month_to_num(month):
     return str(months.index(month) + 1)
 
 # Command line arguements
-parser = argparse.ArgumentParser(description='Extract and format fb messages to be analyzed, with some simple wordclouds and statistics')
+parser = argparse.ArgumentParser(description='Extract and format fb messages to be analyzed, with some simple statistics')
 parser.add_argument('infile', metavar='if', type=str, help='in-file location')
 parser.add_argument('outfile', metavar='of', type=str, help='out-file location')
 parser.add_argument('user1', metavar='u1', type=str, help='User 1\'s name within the conversation')
 parser.add_argument('user2', metavar='u2', type=str, help='User 2\'s name within the conversation')
 parser.add_argument('-v', help='increase output verbosity', action='store_true')
 parser.add_argument('-s', help='display message statistics', action='store_true')
-parser.add_argument('-wc', help='display simple wordcloud', action='store_true')
 args = parser.parse_args()
 #print(args.infile)
 
@@ -193,7 +191,7 @@ for raw_line in raw_msg_file:
         prev_sender = match[0]
 
 # Sort it by date, in descending order
-list_final_sorted = sorted(list_final, key=operator.itemgetter(2), reverse=True)
+list_final_sorted = sorted(list_final, key=operator.itemgetter(2), reverse=False)
 
 # Write to file
 for line_buffer in list_final_sorted:
@@ -202,18 +200,6 @@ for line_buffer in list_final_sorted:
 # Close files
 raw_msg_file.close()
 fmt_msg_file.close()
-
-# Display wordcloud
-if args.wc:
-    # Generate and display
-    # a wordcloud image
-    # the matplotlib way:
-    import matplotlib.pyplot as plt
-    wordcloud = WordCloud(background_color="white", max_words=2000, max_font_size=80, relative_scaling=.25).generate(messages_total)
-    plt.figure()
-    plt.imshow(wordcloud)
-    plt.axis("off")
-    plt.show()
 
 # User statistics
 if args.s:
