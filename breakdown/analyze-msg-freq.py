@@ -59,7 +59,7 @@ def date_labels(rdate):
 #
 #
 # Read first line in order to get LAST date
-# FACEBOOK ORGANIZES FROM MOST RECENT TO OLDEST
+# ORGANIZED FROM MOST RECENT TO OLDEST
 with open(args.csv, 'rv') as f:
     found_last = False
     for line in f.readlines():
@@ -140,6 +140,7 @@ plt.xlabel('date')
 # Set labels position and text
 ax.set_xticks(x_labels_tick)
 ax.set_xticklabels(x_labels)
+plt.setp(ax.get_xticklabels(), rotation=30, fontsize=10)
 
 # Sets window title
 fig.canvas.set_window_title('Message frequency against time')
