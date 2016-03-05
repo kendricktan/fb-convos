@@ -1,5 +1,6 @@
 from wordcloud import WordCloud
 import argparse
+import operator
 import re
 import htmllib
 
@@ -10,6 +11,11 @@ def html_escape(s):
     p.save_bgn()
     p.feed(s)
     return p.save_end()
+
+# Converts month to number
+def month_to_num(month):
+    months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    return str(months.index(month) + 1)
 
 # Command line arguements
 parser = argparse.ArgumentParser(description='Extract and format fb messages to be analyzed, with some simple wordclouds and statistics')
@@ -45,6 +51,9 @@ user1_messages_sent = 0
 user2_messages_sent = 0
 user1_temp_messages = 0
 user2_temp_messages = 0
+
+# Our list (to sort out dates in descending order later)
+list_final = []
 
 ################################ RULES #######################################
 #                                                                            #
@@ -101,8 +110,8 @@ for raw_line in raw_msg_file:
                 if args.v:
                     print(string_buffer)
 
-                # Writes to file
-                fmt_msg_file.write(string_buffer)
+                # Appends to list 
+                list_final.append(string_buffer)
 
                 # If want statistics then we append to final string
                 if args.s:
@@ -157,7 +166,7 @@ for raw_line in raw_msg_file:
             # Datetime formatted CSV
             datetime_buffer = match[1].replace(',', '').split()
 
-            string_buffer = string_buffer + '\n' + match[0].replace(',', '') + ',' + datetime_buffer[0] + ',' + datetime_buffer[1] + ' ' + datetime_buffer[2] + ' ' + datetime_buffer[3] + ',' + datetime_buffer[5] + ',' + datetime_buffer[6] + ',' + html_escape(match[2].replace(',', ''))
+            string_buffer = string_buffer + '\n' + match[0].replace(',', '') + ',' + datetime_buffer[0] + ',' + datetime_buffer[3] + '-' + month_to_num(datetime_buffer[1]) + '-' + datetime_buffer[2] + ',' + datetime_buffer[5] + ',' + datetime_buffer[6] + ',' + html_escape(match[2].replace(',', ''))
 
         elif user2_name in match[0]:
             # User statistics
@@ -170,7 +179,7 @@ for raw_line in raw_msg_file:
             # Datetime formatted CSV
             datetime_buffer = match[1].replace(',', '').split()
 
-            string_buffer = string_buffer + '\n' + match[0].replace(',', '') + ',' + datetime_buffer[0] + ',' + datetime_buffer[1] + ' ' + datetime_buffer[2] + ' ' + datetime_buffer[3] + ',' + datetime_buffer[5] + ',' + datetime_buffer[6] + ',' + html_escape(match[2].replace(',', ''))
+            string_buffer = string_buffer + '\n' + match[0].replace(',', '') + ',' + datetime_buffer[0] + ',' + datetime_buffer[3] + '-' + month_to_num(datetime_buffer[1]) + '-' + datetime_buffer[2] + ',' + datetime_buffer[5] + ',' + datetime_buffer[6] + ',' + html_escape(match[2].replace(',', ''))
 
         else:
             if user1_name not in match[0] and user2_name not in match[0]: # Must be a conversation between someone else, scrap the buffer
@@ -182,6 +191,13 @@ for raw_line in raw_msg_file:
 
         # Set previous sender
         prev_sender = match[0]
+
+# Sort it by date, in descending order
+list_final_sorted = sorted(list_final, key=operator.itemgetter(2), reverse=True)
+
+# Write to file
+for line_buffer in list_final_sorted:
+    fmt_msg_file.write(str(line_buffer).replace('\'', ''))
 
 # Close files
 raw_msg_file.close()
