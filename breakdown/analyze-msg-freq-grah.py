@@ -130,7 +130,7 @@ y_data = y_data[::-1]
 fig, ax = plt.subplots()
 
 # Plot data
-ax.plot(x_data, y_data, color=blue, lw=3)
+ax.plot(x_data, y_data, color=blue, linewidth=1)
 
 # Fill graph
 ax.fill_between(x_data, 0, y_data, alpha=.3)
