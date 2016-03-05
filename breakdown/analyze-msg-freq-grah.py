@@ -10,6 +10,8 @@ blue, = sns.color_palette('muted', 1)
 # Arguements
 parser = argparse.ArgumentParser(description='Generate a graph based on message frequency and times throughout the days')
 parser.add_argument('csv', metavar='csv', type=str, help='csv file location')
+parser.add_argument('-sd', dest='sd', const='2015-01-01', action='store', nargs='?', type=str, help='only start displaying from date') 
+parser.add_argument('-ed', dest='ed', const='2016-01-01', action='store', nargs='?', type=str, help='don\'t display after this date') 
 args = parser.parse_args()
 
 # Useful functions to convert fb-msg data into datetime
@@ -59,8 +61,21 @@ with open(args.csv, 'rv') as f:
 
 # Compute difference of days
 # Analyze data accordingly to prepare data
-first_month = date(date_first.year, date_first.month, 1) # First day of oldest message (makes data look neater)
-delta_days = (date_last - first_month).days
+#
+
+# If user has defined his own start date
+if args.sd:
+    buffer_list = args.sd.split('-')
+    buffer_sd = date(int(buffer_list[0]), int(buffer_list[1]), int(buffer_list[2]))
+
+first_month = buffer_sd if buffer_sd else date(date_first.year, date_first.month, 1) # First day of oldest message (makes data look neater)
+
+# If user has defined his own end date
+if args.ed:
+    buffer_list = args.ed.split('-')
+    date_last = date(int(buffer_list[0]), int(buffer_list[1]), int(buffer_list[2]))
+
+delta_days = (date_last - first_month).days # Difference in days (to index things)
 
 # Data points
 x_data = np.arange(delta_days) # our x-axis data
@@ -85,8 +100,8 @@ with open(args.csv, 'rv') as f:
             pass
 
 # First date label
-x_labels.append(date_labels(date_first))
-x_labels_tick.append((date_first-first_month).days)
+#x_labels.append(date_labels(date_first))
+#x_labels_tick.append((date_first-first_month).days)
 
 # Organize labels according to month
 buffer_date = first_month
@@ -100,8 +115,8 @@ while buffer_date <= date_last:
         buffer_date = date(buffer_date.year + 1, 1, buffer_date.day)
 
 # Last date label
-x_labels.append(date_labels(date_last))
-x_labels_tick.append((delta_days-1))
+#x_labels.append(date_labels(date_last))
+#x_labels_tick.append((delta_days-1))
 
 # Reverse our data point
 # as fb's data starts from latest to oldest

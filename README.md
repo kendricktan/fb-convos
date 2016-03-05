@@ -3,13 +3,13 @@
 ## About
 
 
-v1.1:
+#### v1.1:
 
- Able to generate wordcloud with masks, simple by adding the -m command
+Able to generate wordcloud with masks, simple by adding the -m command
 
  To use custom masks, replace the mask_color.png to the image of your choice
 
-v1.0: 
+#### v1.0: 
 
  Able to extract conversations between two people
 
@@ -77,3 +77,21 @@ To save the files and don't display the masked wordclouds, run:
 Again, for more information invoke the --help flag
     
     python breakdown/analyze-wordcloud.py --help
+
+### Step 4 (message frequency against time in a graph form)
+To generate a graph of the message frequency against time, simply invoke
+
+    python breakdown/analyze-msg-freq-grah.py data/out.csv
+
+To specify a start date for the graph (forcefully start displaying from that date), simply invoke the `-sd` (start date) flag
+
+#### the -sd flag format is [YYYY-MM-DD] 
+
+    python breakdown/analyze-msg-freq-grah.py -sd 2015-09-20 data/out.csv
+
+To specify a end date for the graph (forcefully display until that date), simply invole the `-ed` (end date) flag
+
+#### the -ed flag format is [YYYY-MM-DD]
+
+    python breakdown/analyze-msg-freq-grah.py -sd 2015-09-20 -ed 2016-01-01 data/out.csv
+
