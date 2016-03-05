@@ -12,26 +12,7 @@ parser = argparse.ArgumentParser(description='Generate a graph based on message 
 parser.add_argument('csv', metavar='csv', type=str, help='csv file location')
 args = parser.parse_args()
 
-# Days to accumulate message frequency
-class Days:
-    days = {}
-
-    def analyse_days(self, s):
-        try:
-            self.days[s] = self.days[s] + 1
-        except:
-            self.days[s] = 1
-
-    def self_print(self):
-        for i in self.days:
-            print(i, self.days[i])
-
 # Useful functions to convert fb-msg data into datetime
-# Converts month to numbers
-def month_to_num(month):
-    months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-    return months.index(month) + 1
-
 # Converts numbers to month
 def num_to_month(num):
     nums = {'1': 'Jan', '2': 'Feb', '3': 'Mar', '4': 'Apr', '5': 'May', '6': 'Jun', '7': 'Jul', '8': 'Aug', '9': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec'}
@@ -150,26 +131,4 @@ fig.canvas.set_window_title('Message frequency against time')
 
 # Shows graph
 plt.show()
-
-# Variables
-days = Days()
-
-# Pie chart display for average messages per day
-#
-with open(args.csv, 'rv') as f:
-    for line in f.readlines():
-        try:
-            csv_vals = line.split(',')
-            #
-            # csv_vals[0] = Sender name
-            # csv_vals[1] = Day
-            # csv_vals[2] = Date
-            # csv_vals[3] = Time
-            #
-            days.analyse_days(csv_vals[1])
-        except:
-            pass
-
-x = [i for i in range(0, len(days.days))]
-y = [days.days[i] for i in days.days] 
 
