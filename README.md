@@ -2,6 +2,11 @@
 
 ## About
 
+#### v1.2:
+
+Able to generate basic graphs that depict the messaging frequency over time
+
+![freq-graph](http://i.imgur.com/QOnModk.png)
 
 #### v1.1:
 
