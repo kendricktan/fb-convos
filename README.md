@@ -37,9 +37,8 @@ Analayze and visualize your facebook converstaions between you and someone!
 ![wordcloud](http://i.imgur.com/BFvzktd.png)
 
 ## Todo
-1. Message frequency according to time (pie chart of which days you talk the most) [blue=you, red=her, green=all]
-2. Who initiates conversation 
-3. Mouse click events for the graphs 
+1. Who initiates conversation 
+2. Mouse click events for the graphs 
 
 ## Getting started
 ### Dependencies
