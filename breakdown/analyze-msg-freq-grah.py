@@ -63,12 +63,12 @@ with open(args.csv, 'rv') as f:
 # Analyze data accordingly to prepare data
 #
 
-first_month = date(date_first.year, date_first.month, 1) # First day of oldest message (makes data look neater)
+date_first = date(date_first.year, date_first.month, 1) # First day of oldest message (makes data look neater)
 
 # If user has defined his own start date
 if args.sd:
     buffer_list = args.sd.split('-')
-    first_month = date(int(buffer_list[0]), int(buffer_list[1]), int(buffer_list[2]))
+    date_first = date(int(buffer_list[0]), int(buffer_list[1]), int(buffer_list[2]))
     
 
 # If user has defined his own end date
@@ -76,7 +76,7 @@ if args.ed:
     buffer_list = args.ed.split('-')
     date_last = date(int(buffer_list[0]), int(buffer_list[1]), int(buffer_list[2]))
 
-delta_days = (date_last - first_month).days # Difference in days (to index things)
+delta_days = (date_last - date_first).days # Difference in days (to index things)
 
 # Data points
 x_data = np.arange(delta_days) # our x-axis data
@@ -94,7 +94,7 @@ with open(args.csv, 'rv') as f:
             cur_date = date_analyze(csv_vals[2])
 
             # if its within the dates
-            if cur_date >= first_month and cur_date <= date_last:
+            if cur_date >= date_first and cur_date <= date_last:
                 delta_days_index = (date_last-cur_date).days
 
                 # Increment message count via indexing
@@ -103,24 +103,26 @@ with open(args.csv, 'rv') as f:
         except:
             pass
 
-# First date label
-#x_labels.append(date_labels(date_first))
-#x_labels_tick.append((date_first-first_month).days)
-
 # Organize labels according to month
-buffer_date = first_month
+buffer_date = date_first
 while buffer_date <= date_last:
     x_labels.append(date_labels(buffer_date))
-    x_labels_tick.append((buffer_date-first_month).days)
+    x_labels_tick.append((buffer_date-date_first).days)
 
     try:
         buffer_date = date(buffer_date.year, buffer_date.month + 1, buffer_date.day)
     except:
         buffer_date = date(buffer_date.year + 1, 1, buffer_date.day)
 
+# First date label
+if date_labels(date_first) not in x_labels:
+    x_labels.insert(0, date_labels(date_first))
+    x_labels_tick.insert(0, (date_first-date_first).days)
+
 # Last date label
-#x_labels.append(date_labels(date_last))
-#x_labels_tick.append((delta_days-1))
+if date_labels(date_last) not in x_labels:
+    x_labels.append(date_labels(date_last))
+    x_labels_tick.append((delta_days-1))
 
 # Reverse our data point
 # as fb's data starts from latest to oldest
