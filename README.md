@@ -2,19 +2,21 @@
 
 ## About
 
-#### v1.2:
+#### 05/03/2016:
 
 Able to generate basic graphs that depict the messaging frequency over time
 
 ![freq-graph](http://i.imgur.com/QOnModk.png)
 
-#### v1.1:
+#### 26/02/2016:
 
-Able to generate wordcloud with masks, simple by adding the -m command
+Able to generate wordcloud with masks, simple by adding the -m flag
 
- To use custom masks, replace the mask_color.png to the image of your choice
+To use custom masks, replace the mask_color.png in the breakdown folder to the image of your choice
+ 
+![wordcloud-masked](http://i.imgur.com/NFZnilS.png)
 
-#### v1.0: 
+#### 25/02/2016: 
 
  Able to extract conversations between two people
 
@@ -36,7 +38,7 @@ matplotlib, wordcloud, ggplot is currently used to aid visualization. To install
 
     pip install matplotlib
     pip install wordcloud
-    pip install ggplot
+    pip install seaborn
 
 ### Step 1 (Setup):
 Get a copy of the repository and put the messages.htm that you downloaded from facebook into fb-convos/data/messages.htm
