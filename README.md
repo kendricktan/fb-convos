@@ -28,9 +28,8 @@ Analayze and visualize your facebook converstaions between you and someone!
 
 ## Todo
 1. Message frequency according to time (pie chart of which days you talk the most) [blue=you, red=her, green=all]
-2. Who initiates conversation (before and after dating)
-3. Average words per conversation over time
-n. Add ability to grab messages that span over multiple lines
+2. Who initiates conversation 
+3. Mouse click events for the graphs 
 
 ## Getting started
 ### Dependencies
@@ -41,7 +40,7 @@ matplotlib, wordcloud, ggplot is currently used to aid visualization. To install
     pip install seaborn
 
 ### Step 1 (Setup):
-Get a copy of the repository and put the messages.htm that you downloaded from facebook into fb-convos/data/messages.htm
+Get a copy of the repository and put the messages.htm that you downloaded from facebook into fb-convos/data/messages.htm. For more info on downloading your facebook data goto https://www.facebook.com/help/131112897028467/
 
     git clone https://github.com/kendricktan/fb-convos.git
     cd fb-convos
