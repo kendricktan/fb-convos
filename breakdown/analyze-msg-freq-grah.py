@@ -9,6 +9,9 @@ blue = '#3498db'
 red = '#e74c3c'
 green = '#2ecc71'
 
+# User's name 
+user1_name = ''
+user2_name = ''
 
 # Our font
 font_default = FontProperties()
@@ -18,6 +21,9 @@ font_default.set_weight('bold')
 # Arguements
 parser = argparse.ArgumentParser(description='Generate a graph based on message frequency and times throughout the days')
 parser.add_argument('csv', metavar='csv', type=str, help='csv file location')
+parser.add_argument('-da', help='Display all (da), displays all user\'s graph', action='store_true') # Shows graph from two users 
+parser.add_argument('-u1', dest='u1', action='store', nargs='?', type=str, help='Explicitly specifies user1\'s name') 
+parser.add_argument('-u2', dest='u2', action='store', nargs='?', type=str, help='Explicitly specifies user2\'s name') 
 parser.add_argument('-sd', dest='sd', const='2015-01-01', action='store', nargs='?', type=str, help='only start displaying from date') 
 parser.add_argument('-ed', dest='ed', const='2016-01-01', action='store', nargs='?', type=str, help='don\'t display after this date') 
 args = parser.parse_args()
@@ -56,13 +62,28 @@ with open(args.csv, 'rv') as f:
     for line in f.readlines():
         if not found_last:
             try:
+                # Tries to get first date
                 csv_last = line.split(',')
                 date_last = date_analyze(csv_last[2])
+
+                # Get user 1's name
+                if user1_name == '':
+                    user1_name = csv_last[0]
+
+                # Found first date
                 found_last = True 
             except:
                 pass
         else:
-            pass
+            # Tries to get user 2's name
+            if user2_name == '':
+                csv_last = line.split(',')
+                test = csv_last[2]
+                if csv_last[0] != user1_name:
+                    user2_name = csv_last[0]
+
+            else:
+                pass
     # Read last line in order to get last date
     csv_first = line.split(',')
     date_first = date_analyze(csv_first[2])
@@ -77,7 +98,6 @@ date_first = date(date_first.year, date_first.month, 1) # First day of oldest me
 if args.sd:
     buffer_list = args.sd.split('-')
     date_first = date(int(buffer_list[0]), int(buffer_list[1]), int(buffer_list[2]))
-    
 
 # If user has defined his own end date
 if args.ed:
@@ -89,14 +109,24 @@ delta_days = (date_last - date_first).days # Difference in days (to index things
 # Data points
 x_data = np.arange(delta_days) # our x-axis data
 y_data = [0 for i in range(0, delta_days)] # our y-axis data
+user1_y_data = [0 for i in range(0, delta_days)] # User 1's y data
+user2_y_data = [0 for i in range(0, delta_days)] # User 2's y data
 x_labels = [] # labels for the x axis
 x_labels_tick = [] # where the labels appear on the x-axis
+
+if args.u1:
+    user1_name = args.u1
+
+if args.u2:
+    user2_name = args.u2
 
 # Read csv files and process
 with open(args.csv, 'rv') as f:
     for line in f.readlines():
         try:
             csv_vals = line.split(',')
+
+            # csv_vals[0] = name
 
             # Get date
             cur_date = date_analyze(csv_vals[2])
@@ -107,6 +137,11 @@ with open(args.csv, 'rv') as f:
 
                 # Increment message count via indexing
                 y_data[delta_days_index] = y_data[delta_days_index] + 1
+
+                if user1_name in csv_vals[0]:
+                    user1_y_data[delta_days_index] = user1_y_data[delta_days_index] + 1
+                elif user2_name in csv_vals[0]:
+                    user2_y_data[delta_days_index] = user2_y_data[delta_days_index] + 1
 
         except:
             pass
@@ -135,13 +170,25 @@ if date_labels(date_last) not in x_labels:
 # Reverse our data point
 # as fb's data starts from latest to oldest
 y_data = y_data[::-1]
+user1_y_data = user1_y_data[::-1]
+user2_y_data = user2_y_data[::-1]
 
 # Create graph
 fig, ax = plt.subplots(facecolor='white')
 
 # Plot data
+# Total
 plt.plot(x_data, y_data, color=blue, linewidth=2.5)
-plt.text(delta_days, y_data[-1], 'Total messages', fontproperties=font_default, fontsize=12, color=blue)
+plt.text(delta_days, y_data[-1], 'Total', fontproperties=font_default, fontsize=12, color=blue)
+
+if args.da:
+    # User 1
+    plt.plot(x_data, user1_y_data, color=green, linewidth=2.5)
+    plt.text(delta_days, user1_y_data[-1], user1_name, fontproperties=font_default, fontsize=12, color=green)
+
+    # User 2
+    plt.plot(x_data, user2_y_data, color=red, linewidth=2.5)
+    plt.text(delta_days, user2_y_data[-1], user2_name, fontproperties=font_default, fontsize=12, color=red)
 
 # Set graph limit 
 ax.set(xlim=(0, len(x_data)-1), ylim=(0, None))

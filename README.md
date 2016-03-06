@@ -4,6 +4,10 @@
 
 #### 06/03/2016:
 
+Made graphs a little bit more prettier, also added the option to display stats from users on the graph (not shown in pic)
+
+![graph-pretty](http://i.imgur.com/peSuq3S.png)
+
 Able to generate basic pie charts to demonstrate the chat distribution across the days
 
 ![pie-chart](http://i.imgur.com/wLRL5tU.png)
@@ -106,6 +110,14 @@ To specify a end date for the graph (forcefully display until that date), simply
 #### the -ed flag format is [YYYY-MM-DD]
 
     python breakdown/analyze-msg-freq-grah.py -sd 2015-09-20 -ed 2016-01-01 data/out.csv
+
+To display all graphs (a.k.a graphs from user1 and user2), add the -da flag
+
+    python breakdown/analyze-msg-freq-grah.py -da -sd 2015-09-20 -ed 2016-01-01 data/out.csv
+
+To manually specify a user's name user the -u1 or -u2 command (for the -da output), e.g.
+
+    python breakdown/analyze-msg-freq-grah.py -u1 USER1 -u2 USER2 -sd 2015-09-20 -ed 2016-01-01 data/out.csv
 
 ### Step 5 (chat distribution in a pie chart)
 To generate a pie chart of the distribution of chat across the days, simply invoke
