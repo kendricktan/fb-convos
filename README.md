@@ -2,6 +2,12 @@
 
 ## About
 
+#### 06/03/2016:
+
+Able to generate basic pie charts to demonstrate the chat distribution across the days
+
+![pie-chart](http://i.imgur.com/wLRL5tU.png)
+
 #### 05/03/2016:
 
 Able to generate basic graphs that depict the messaging frequency over time
@@ -100,4 +106,9 @@ To specify a end date for the graph (forcefully display until that date), simply
 #### the -ed flag format is [YYYY-MM-DD]
 
     python breakdown/analyze-msg-freq-grah.py -sd 2015-09-20 -ed 2016-01-01 data/out.csv
+
+### Step 5 (chat distribution in a pie chart)
+To generate a pie chart of the distribution of chat across the days, simply invoke
+
+    python breakdown/analyze-msg-daily-piechart.py data/out.csv
 
