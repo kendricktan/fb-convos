@@ -77,8 +77,6 @@ pie_wedge_collection = ax.pie(chart_data_dist, labels=chart_labels, autopct='%1.
 for pie_wedge in pie_wedge_collection[0]:
     pie_wedge.set_edgecolor('white')
 
-ax.set_title('Chat distribution')
-
-fig.canvas.set_window_title('Yum, pie!')
+fig.canvas.set_window_title('Chat distribution')
 plt.axis('equal') # make piechart circular
 plt.show()

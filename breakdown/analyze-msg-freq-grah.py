@@ -1,11 +1,19 @@
 from datetime import date
+from matplotlib.font_manager import FontProperties
 import argparse
-import seaborn as sns
 import numpy as np
 import matplotlib.pyplot as plt
 
 # Color palette
-blue, = sns.color_palette('muted', 1)
+blue = '#3498db' 
+red = '#e74c3c'
+green = '#2ecc71'
+
+
+# Our font
+font_default = FontProperties()
+font_default.set_family('sans-serif')
+font_default.set_weight('bold')
 
 # Arguements
 parser = argparse.ArgumentParser(description='Generate a graph based on message frequency and times throughout the days')
@@ -129,26 +137,54 @@ if date_labels(date_last) not in x_labels:
 y_data = y_data[::-1]
 
 # Create graph
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(facecolor='white')
 
 # Plot data
-ax.plot(x_data, y_data, color=blue, linewidth=1)
+plt.plot(x_data, y_data, color=blue, linewidth=2.5)
+plt.text(delta_days, y_data[-1], 'Total messages', fontproperties=font_default, fontsize=12, color=blue)
 
-# Fill graph
-ax.fill_between(x_data, 0, y_data, alpha=.3)
+# Set graph limit 
 ax.set(xlim=(0, len(x_data)-1), ylim=(0, None))
 
+# Add tick lines across y-axis to trace data more easily
+y_axis_labels = ax.get_yticks()
+buffer_i = int(y_axis_labels[1]) # Gets the first tick range for the y-axis
+buffer_i_max = int(y_axis_labels[-1])
+for buffer_y in range(0, buffer_i_max+1, buffer_i):
+    plt.plot(range(0, delta_days), [buffer_y]*len(range(0, delta_days)), '--', lw=0.5, color='black', alpha=0.3)
+plt.axhline(0, color='black', alpha=0.3)
+
+# Remove the tick marks; they are unnecessary with the tick lines we just plotted.
+plt.tick_params(axis="both", which="both", bottom="off", top="off", labelbottom="on", left="off", right="off", labelleft="on")
+
+# Set background color
+ax.set_axis_bgcolor('white')
+
+# Remove plot frame lines
+ax.spines["top"].set_visible(False)
+ax.spines["bottom"].set_visible(False)
+ax.spines["right"].set_visible(False)
+ax.spines["left"].set_visible(False)
+
+# Remove unncessary chartjunk
+ax.get_xaxis().tick_bottom()
+ax.get_yaxis().tick_left()
+
 # Set axis label
-plt.ylabel('messages per day')
-plt.xlabel('date')
+#plt.ylabel('messages per day')
+#plt.xlabel('date')
 
 # Set labels position and text
-ax.set_xticks(x_labels_tick)
+ax.set_xticks(x_labels_tick )
 ax.set_xticklabels(x_labels)
-plt.setp(ax.get_xticklabels(), rotation=30, fontsize=10)
 
 # Sets window title
-fig.canvas.set_window_title('Message frequency against time')
+fig.canvas.set_window_title('Number of messages sent daily')
+
+# Make sure labels are have enough room
+plt.xticks(fontsize=12)
+plt.yticks(fontsize=12)
+plt.setp(ax.get_xticklabels(), rotation=35)
 
 # Shows graph
 plt.show()
