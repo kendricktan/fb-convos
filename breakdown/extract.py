@@ -167,7 +167,12 @@ for raw_line in raw_msg_file:
             # Datetime formatted CSV
             datetime_buffer = match[1].replace(',', '').split()
 
-            string_buffer = string_buffer + '\n' + match[0].replace(',', '') + ',' + datetime_buffer[0] + ',' + datetime_buffer[3] + '-' + month_to_num(datetime_buffer[1]) + '-' + datetime_buffer[2] + ',' + datetime_buffer[5] + ',' + datetime_buffer[6] + ',' + html_escape(match[2].replace(',', ''))
+            try:
+                
+                string_buffer = string_buffer + '\n' + match[0].replace(',', '') + ',' + datetime_buffer[0] + ',' + datetime_buffer[3] + '-' + month_to_num(datetime_buffer[1]) + '-' + datetime_buffer[2] + ',' + datetime_buffer[5] + ',' + datetime_buffer[6] + ',' + html_escape(match[2].replace(',', ''))
+
+            except:
+                pass
 
         elif user2_name in match[0]:
             # User statistics
